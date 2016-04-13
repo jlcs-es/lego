@@ -1,0 +1,5 @@
+#!/bin/bash
+rm -rf lego/
+git clone https://github.com/jlcs-es/lego
+cd lego/ORG1/METASPLOITABLE
+./network
