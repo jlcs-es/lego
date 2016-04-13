@@ -1,0 +1,66 @@
+apt-get install vlan -y
+modprobe 8021q
+su -c 'echo "8021q" >> /etc/modules'
+
+stop network-manager
+
+cat > /etc/network/interfaces << EOF
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1.31
+iface eth1.31 inet static
+address 192.168.31.1
+netmask 255.255.255.0
+vlan-raw-device eth1
+
+auto eth1.32
+iface eth1.32 inet static
+address 192.168.32.1
+netmask 255.255.255.0
+vlan-raw-device eth1
+EOF
+
+cat > /etc/hosts << EOF
+127.0.0.1   localhost
+127.0.0.1   Laboratorio27
+
+#ROUTER
+192.168.31.1    router.org31
+192.168.32.1    router.org32
+
+
+#ORG1
+192.168.31.2    fisica.org31
+
+192.168.31.100    server.org31
+192.168.31.101    metasploitable.org31
+192.168.31.101    client.org31
+
+
+#ORG2
+192.168.32.2    fisica.org32
+
+192.168.32.100    server.org32
+192.168.32.101    client.org32
+
+EOF
+
+
+ifdown eth0
+ifup eth0
+ifup eth1.31
+ifup eth1.32
+
+sysctl -w net.ipv4.ip_forward=1
+#O hacerlo permanente descomentando la linea en /etc/sysctl
+
+iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+iptables-save
+apt-get install iptables-persistent -y
+
+exit 0

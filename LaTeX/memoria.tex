@@ -1,0 +1,145 @@
+\documentclass[]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim} %con verbatim escribes bloques de texto con letra mono.
+\usepackage{graphicx} %para insertar imagenes, cuando meta yo una usa el codigo de ejemplo
+\usepackage{listings}
+\usepackage{fullpage}
+\usepackage{color}
+\usepackage{fancyvrb}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc} %Para usar acentos directamente en latex
+\usepackage{hyperref} %Para que el indice tenga hiperenlaces y si quieres poner los tuyos
+\hypersetup{%
+	pdfborder = {0 0 0}
+}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+%Para insertar código: crea un recuadro con texto mono y lineas enumeradas. Puedes referenciar un fichero y no copiar y pegar aquí.
+\lstset{ %
+	backgroundcolor=\color{white},   % chohttp://xdxd.com/ose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 % sets automatic line breaking
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	frame=single,                    % adds a frame around the code
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,          % underline spaces within strings only
+	showtabs=false,                  % show tabs within strings adding particular underscores
+	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=4,
+	inputencoding=utf8,
+	title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+
+
+\title{Seguridad}
+\author{José Luis Cánovas Sánchez - 48636907A\\Ezequiel Santamaría Navarro - 20096517Z}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+En esta memoria se describe el desarrollo del apartado 2.2 de las prácticas de Seguridad:
+%TODO
+\end{abstract}
+
+\tableofcontents
+
+
+\section{Introducción}
+
+Como grupo 3 de prácticas, desplegaremos las organizaciones 31 y 32.
+El trabajo en grupo ha consistido en que ambos hemos desarrollado y configurado todo conjuntamente,
+lo que se refleja en nuestro repositorio git de GitHub, donde subimos los scripts de instalación
+con los que automatizamos la práctica, pues preferimos no usar máquinas virtuales, por los problemas
+ de fluidez y tamaño de las máquinas virtuales. Así podemos trabajar con unos pocos megas de scripts y capturas en cualquier ordenador.
+
+
+%\begin{center}
+%	\includegraphics[width=1\linewidth]{images/}
+%\end{center}
+
+
+\section{}
+
+\subsection{Scripts de instalación}
+
+Para automatizar la configuración del escenario en cualquier máquina, hemos escrito una serie de scripts que no necesitan de interacción manual una
+vez se inicia la instalación (excepto algún \textit{Enter} ocasional). Utilizamos la herramienta \textit{make} para facilitar aún más
+el despliegue. La organización de los scripts corresponde a una jerarquía de directorios como la siguiente:
+
+\hfil
+
+%TODO: modificar
+\begin{BVerbatim}
+ROUTER
+	Makefile
+	network
+	test
+
+ORG1
+	SERVER
+		Makefile
+		network
+		test
+		ESCENARIO
+			install.sh
+			php-oauth-saml-demo-master
+				appserver
+				php-oauth
+				simplesamlphp
+				vagrant
+
+ORG2
+	SERVER
+		Makefile
+		network
+		test
+		ESCENARIO
+			install.sh
+			php-oauth-saml-demo-master
+				appclient
+				vagrant
+\end{BVerbatim}
+
+\hfill
+
+
+Donde ESCENARIO sirve como carpeta contenedora de los scripts específicos de esta práctica, mientras que otros ficheros como \textit{network} nos
+permiten configurar LEGO automáticamente, configurando la red, el forwarding, la resolución de DNS o fichero \textit{hosts}, etc.
+
+
+\hfill
+
+En la práctica, para ejecutarlos, basta con irse al directorio correspondiente, por ejemplo, para configurar la Organización 31, navegamos a ORG1/SERVER/, y desde ahí
+ejecutamos la orden:
+
+%TODO:
+\begin{verbatim}
+sudo make [network] [escenario] [test] [...]
+\end{verbatim}
+
+Si no ponemos argumentos, por defecto aplicaría la configuración de la red y test. De querer instalar la práctica 2, deberíamos indicar \textit{make saml}, y, para el escenario a entregar, \textit{make escenario}.
+
+\hfill
+
+%TODO:
+Es importante notar que la configuración de la red (\textit{make network}) no sólo configura las IP de cada máquina, así como el \textit{forwarding} de la que haga de Router, sino que además configura el DNS de Google para navegar por internet, y en el fichero \textit{/etc/hosts} añade las entradas de \textit{server.org31}, \textit{server.org32}, \textit{oauth.org31}, \textit{appclient.org32}, etc., que se pueden ver en la imagen del escenario al inicio de esta sección. Esto último es de gran importancia porque así pasamos de usar los nombres \textit{*.local} del escenario de la práctica 3, a direcciones cualquiera que podrían estar en la jerarquía DNS, y al forzarnos a cambiarlos, nos daremos cuenta de cómo se podría mejorar este escenario de prácticas.
+
+
+
+
+\end{document}
