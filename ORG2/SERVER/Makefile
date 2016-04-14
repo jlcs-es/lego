@@ -1,5 +1,5 @@
 
-all: network test nmap metasploit
+all: network nmap metasploit nessus test
 
 network:
 	sh network
@@ -13,6 +13,10 @@ metasploit:
 	cd METASPLOIT; \
 	sh install.sh
 
+nessus:
+	cd NESSUS; \
+	sh install.sh
+
 ssh:
 	cp sshd_config /etc/ssh/sshd_config
 	service ssh restart
@@ -20,4 +24,4 @@ ssh:
 test:
 	sh test
 
-.PHONY: all network test nmap metasploit
+.PHONY: all network test nmap metasploit nessus
